@@ -9,7 +9,8 @@ import {
 
 export async function getSimplePCGames(
   apiKey: string,
-  searchTerm: string
+  searchTerm: string,
+  limit?: number
 ): Promise<SimplePCGame[]> {
   if (!apiKey) {
     throw new Error("RAWG API key is missing.");
@@ -20,6 +21,7 @@ export async function getSimplePCGames(
   )}`;
 
   const data: RawgResponse = await fetchRawgGames(url);
+  const displayLimit = limit ?? DEFAULT_LIMIT;
 
   return data.results
     .filter((game) =>
@@ -27,7 +29,7 @@ export async function getSimplePCGames(
         (p) => p.platform.slug === PC_PLATFORM_SLUG
       )
     )
-    .slice(0, DEFAULT_LIMIT)
+    .slice(0, displayLimit)
     .map((game) => ({
       id: game.id,
       name: game.name,
