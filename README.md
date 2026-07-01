@@ -1,11 +1,14 @@
-## Getting Started
+## 🔐 Environment Variables
 
-First, run the development server:
+This project requires a RAWG API key.
+
+Create a `.env.local` file in the root of the project:
 
 ```bash
-npm run dev
+.env.local
+```
+```bash
+RAWG_API_KEY=your_api_key_here
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
+check `.env.example` for example structure. 
