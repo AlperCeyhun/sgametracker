@@ -13,19 +13,12 @@ export default function PaginationControls({
   nextHref,
 }: PaginationControlsProps) {
   return (
-    <div
-      style={{
-        display: "flex",
-        justifyContent: "space-between",
-        alignItems: "center",
-        marginTop: "1.5rem",
-      }}
-    >
-      <Link href={previousHref} style={{ color: "#93c5fd", textDecoration: "none" }}>
+    <div className="mt-6 flex items-center justify-between">
+      <Link href={previousHref} className="text-blue-300 no-underline hover:text-blue-200">
         ← Previous
       </Link>
       <span>Page {currentPage}</span>
-      <Link href={nextHref} style={{ color: "#93c5fd", textDecoration: "none" }}>
+      <Link href={nextHref} className="text-blue-300 no-underline hover:text-blue-200">
         Next →
       </Link>
     </div>

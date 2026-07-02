@@ -42,15 +42,15 @@ export default function GameSearchPage({
         apiKey={apiKey}
       />
 
-      <main style={{ padding: "2rem", maxWidth: "1000px", margin: "0 auto" }}>
-        <p style={{ marginBottom: "1.25rem", color: "#9ca3af" }}>
+      <main className="mx-auto max-w-5xl px-8 py-8">
+        <p className="mb-5 text-gray-400">
           Search for PC games and browse through pages of results.
         </p>
 
-      <GameSearchBar searchQuery={searchQuery} />
+        <GameSearchBar searchQuery={searchQuery} />
 
         {!apiKey ? (
-          <p style={{ color: "#fbbf24" }}>Set RAWG_API_KEY to load live game data.</p>
+          <p className="text-amber-400">Set RAWG_API_KEY to load live game data.</p>
         ) : games.length === 0 ? (
           <p>No PC games found for “{searchQuery}”.</p>
         ) : (

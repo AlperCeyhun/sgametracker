@@ -7,35 +7,17 @@ type GameSearchBarProps = {
 
 export default function GameSearchBar({ searchQuery }: GameSearchBarProps) {
   return (
-    <form
-      action="/"
-      method="get"
-      style={{ display: "flex", gap: "0.75rem", marginBottom: "1.5rem" }}
-    >
+    <form action="/" method="get" className="mb-6 flex gap-3">
       <input
         name="query"
         defaultValue={searchQuery}
         placeholder="Search games"
-        style={{
-          flex: 1,
-          padding: "0.8rem 1rem",
-          borderRadius: "8px",
-          border: "1px solid #444",
-          backgroundColor: "#111827",
-          color: "#f9fafb",
-        }}
+        className="flex-1 rounded-lg border border-gray-700 bg-gray-900 px-4 py-3 text-gray-50 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/40"
       />
       <input type="hidden" name="page" value={DEFAULT_PAGE} />
       <button
         type="submit"
-        style={{
-          padding: "0.8rem 1rem",
-          borderRadius: "8px",
-          border: "none",
-          backgroundColor: "#2563eb",
-          color: "white",
-          cursor: "pointer",
-        }}
+        className="rounded-lg border-none bg-blue-600 px-4 py-3 font-medium text-white transition hover:bg-blue-700"
       >
         Search
       </button>
