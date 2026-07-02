@@ -8,29 +8,67 @@ type GameResultsListProps = {
 export default function GameResultsList({ games }: GameResultsListProps) {
   return (
     <div style={{ display: "grid", gap: "1rem" }}>
-      {games.map((game) => (
-        <div
-          key={game.id}
+  {games.map((game) => (
+    <div
+      key={game.id}
+      style={{
+        display: "flex",
+        gap: "1rem",
+        padding: "1rem",
+        border: "1px solid #333",
+        borderRadius: "12px",
+        backgroundColor: "#111827",
+        alignItems: "flex-start",
+      }}
+    >
+      <img
+        src={game.backgroundImage}
+        alt={game.name}
+        style={{
+          width: "220px",
+          height: "120px",
+          objectFit: "cover",
+          borderRadius: "8px",
+          flexShrink: 0,
+        }}
+      />
+
+      <div style={{ flex: 1 }}>
+        <h2
           style={{
-            border: "1px solid #333",
-            padding: "1rem",
-            borderRadius: "8px",
-            backgroundColor: "#111827",
+            margin: 0,
+            marginBottom: "0.75rem",
+            fontSize: "1.6rem",
+            fontWeight: "bold",
           }}
         >
-          <h2 style={{ marginTop: 0 }}>{game.name}</h2>
-          <p>Released: {game.released}</p>
-          <p>Metacritic: {game.metacritic ?? "N/A"}</p>
-          <p>Genres: {game.genres.join(", ") || "N/A"}</p>
+          {game.name}
+        </h2>
 
-          <img
-            src={game.backgroundImage}
-            alt={game.name}
-            width={200}
-            style={{ borderRadius: "6px", marginTop: "0.5rem" }}
-          />
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: "0.35rem",
+            color: "#d1d5db",
+          }}
+        >
+          <p style={{ margin: 0 }}>
+            <strong>Released:</strong> {game.released}
+          </p>
+
+          <p style={{ margin: 0 }}>
+            <strong>Metacritic:</strong> {game.metacritic ?? "N/A"}
+          </p>
+
+          <p style={{ margin: 0 }}>
+            <strong>Genres:</strong>{" "}
+            {game.genres.length ? game.genres.join(", ") : "N/A"}
+          </p>
         </div>
-      ))}
+      </div>
     </div>
+  ))}
+</div>
   );
 }
