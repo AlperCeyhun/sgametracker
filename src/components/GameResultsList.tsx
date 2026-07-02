@@ -53,9 +53,9 @@ function GameCover({ game, isSaved, onToggleSave }: GameCardProps) {
         aria-label={isSaved ? `Remove ${game.name}` : `Save ${game.name}`}
         className={`absolute top-2.5 right-2.5 flex h-10 w-10 items-center justify-center rounded-full text-lg font-bold text-white backdrop-blur-md transition-all duration-200 ${
           isSaved
-            ? "bg-red-600/70 shadow-[0_0_18px_rgba(220,38,38,0.45)] opacity-100"
-            : "bg-green-600/70 shadow-[0_0_18px_rgba(34,197,94,0.45)] opacity-0 -translate-y-1 group-hover:translate-y-0 group-hover:opacity-100"
-        }`}
+            ? "bg-red-600/70 shadow-[0_0_18px_rgba(220,38,38,0.45)]"
+            : "bg-green-600/70 shadow-[0_0_18px_rgba(34,197,94,0.45)]"
+        } opacity-0 -translate-y-1 group-hover:translate-y-0 group-hover:opacity-100`}
       >
         {isSaved ? "✕" : "✓"}
       </button>

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import React, { useState } from "react";
-import GameLibrary from "@/components/GameLibrary";
+import LibrarySidebar from "@/components/LibrarySidebar";
 import {
   LANDING_HERO_BUTTON_LABEL,
   LANDING_HERO_DEFAULT_SEARCH_PATH,
@@ -70,17 +70,11 @@ export default function LandingHero({
         {isLibraryOpen ? "Close Library" : "Open Library"}
       </button>
 
-      <aside
-        className={`fixed top-0 left-0 z-20 h-full w-80 max-w-[85vw] border-r border-gray-800 bg-gray-950/95 p-4 shadow-2xl backdrop-blur transition-transform duration-300 ${
-          isLibraryOpen ? "translate-x-0" : "-translate-x-full"
-        }`}
-      >
-        <div className="mb-3">
-          <h2 className="text-lg font-semibold">Saved Games</h2>
-        </div>
-
-        <GameLibrary apiKey={apiKey} />
-      </aside>
+      <LibrarySidebar
+        isOpen={isLibraryOpen}
+        onClose={() => setIsLibraryOpen(false)}
+        apiKey={apiKey}
+      />
 
       <main className="mx-auto max-w-5xl px-8 py-16">
         <SearchForm action={onSearchSubmit} />
