@@ -1,4 +1,3 @@
-"use client"
 import React from "react";
 import { getSimplePCGames } from "@/services/gameService";
 import GameSearchPage from "@/components/GameSearchPage";
