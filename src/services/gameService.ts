@@ -5,23 +5,26 @@ import {
   PC_PLATFORM_SLUG,
   DEFAULT_LIMIT,
   DEFAULT_IMAGE_FALLBACK,
+  DEFAULT_PAGE,
 } from "../utils/constants";
 
 export async function getSimplePCGames(
   apiKey: string,
   searchTerm: string,
-  limit?: number
+  limit?: number,
+  page?: number
 ): Promise<SimplePCGame[]> {
   if (!apiKey) {
     throw new Error("RAWG API key is missing.");
   }
 
+  const displayLimit = limit ?? DEFAULT_LIMIT;
+  const currentPage = page ?? DEFAULT_PAGE;
   const url = `https://api.rawg.io/api/games?key=${apiKey}&search=${encodeURIComponent(
     searchTerm
-  )}`;
+  )}&page=${currentPage}&page_size=${displayLimit}`;
 
   const data: RawgResponse = await fetchRawgGames(url);
-  const displayLimit = limit ?? DEFAULT_LIMIT;
 
   return data.results
     .filter((game) =>

@@ -1,43 +1,47 @@
 import React from "react";
-import { getSimplePCGames } from "@/services/gameService";
+import Link from "next/link";
 
-export default async function Home() {
-  const apiKey = process.env.RAWG_API_KEY;
-
-  if (!apiKey) {
-    throw new Error("RAWG API key is missing");
-  }
-
-  const games = await getSimplePCGames(apiKey, "witcher");
-
+export default function Home() {
   return (
-    <main style={{ padding: "2rem" }}>
-      <h1>🎮 My Game Feed</h1>
+    <main style={{ padding: "2rem", maxWidth: "800px", margin: "0 auto" }}>
+      <h1 style={{ marginBottom: "0.5rem" }}>🎮 Game Search</h1>
+      <p style={{ marginBottom: "1.5rem", color: "#9ca3af" }}>
+        Enter a game title to search for PC games.
+      </p>
 
-      <div style={{ display: "grid", gap: "1rem" }}>
-        {games.map((game) => (
-          <div
-            key={game.id}
-            style={{
-              border: "1px solid #333",
-              padding: "1rem",
-              borderRadius: "8px",
-            }}
-          >
-            <h2>{game.name}</h2>
-            <p>Released: {game.released}</p>
-            <p>Metacritic: {game.metacritic ?? "N/A"}</p>
-            <p>Genres: {game.genres.join(", ")}</p>
+      <form action="/search" method="get" style={{ display: "flex", gap: "0.75rem" }}>
+        <input
+          name="query"
+          placeholder="Search games"
+          style={{
+            flex: 1,
+            padding: "0.8rem 1rem",
+            borderRadius: "8px",
+            border: "1px solid #444",
+            backgroundColor: "#111827",
+            color: "#f9fafb",
+          }}
+        />
+        <button
+          type="submit"
+          style={{
+            padding: "0.8rem 1rem",
+            borderRadius: "8px",
+            border: "none",
+            backgroundColor: "#2563eb",
+            color: "white",
+            cursor: "pointer",
+          }}
+        >
+          Search
+        </button>
+      </form>
 
-            <img
-              src={game.backgroundImage}
-              alt={game.name}
-              width={200}
-              style={{ borderRadius: "6px" }}
-            />
-          </div>
-        ))}
-      </div>
+      <p style={{ marginTop: "1rem" }}>
+        <Link href="/search?query=witcher" style={{ color: "#93c5fd" }}>
+          Browse a sample search
+        </Link>
+      </p>
     </main>
   );
 }
