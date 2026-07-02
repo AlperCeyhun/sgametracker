@@ -43,7 +43,6 @@ export default function GameSearchPage({
       />
 
       <main style={{ padding: "2rem", maxWidth: "1000px", margin: "0 auto" }}>
-        <h1 style={{ marginBottom: "0.5rem" }}>🎮 My Game Feed</h1>
         <p style={{ marginBottom: "1.25rem", color: "#9ca3af" }}>
           Search for PC games and browse through pages of results.
         </p>

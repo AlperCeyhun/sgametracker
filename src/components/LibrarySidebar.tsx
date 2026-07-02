@@ -22,13 +22,6 @@ export default function LibrarySidebar({
     >
       <div className="mb-3 flex items-center justify-between">
         <h2 className="text-lg font-semibold">Saved Games</h2>
-        <button
-          type="button"
-          onClick={onClose}
-          className="rounded-full border border-gray-700 px-3 py-1 text-sm text-gray-300 transition hover:bg-gray-800"
-        >
-          Close
-        </button>
       </div>
 
       <GameLibrary apiKey={apiKey} />
