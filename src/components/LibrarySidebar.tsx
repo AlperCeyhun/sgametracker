@@ -16,13 +16,10 @@ export default function LibrarySidebar({
 }: LibrarySidebarProps) {
   return (
     <aside
-      className={`fixed top-0 left-0 z-20 h-full w-80 max-w-[85vw] border-r border-gray-800 bg-gray-950/95 p-4 shadow-2xl backdrop-blur transition-transform duration-300 ${
+      className={`fixed top-0 left-0 pt-20 z-20 h-full w-80 max-w-[85vw] border-r border-gray-800 bg-gray-950/95 p-4 shadow-2xl backdrop-blur transition-transform duration-300 ${
         isOpen ? "translate-x-0" : "-translate-x-full"
       }`}
     >
-      <div className="mb-3 flex items-center justify-between">
-        <h2 className="text-lg font-semibold">Saved Games</h2>
-      </div>
 
       <GameLibrary apiKey={apiKey} />
     </aside>
