@@ -9,10 +9,14 @@ import {
   LANDING_HERO_SAMPLE_LINK_LABEL,
   LANDING_HERO_SAMPLE_SEARCH_PATH,
 } from "@/utils/constants";
+import { SimplePCGame } from "@/types/game.types";
+
 
 type LandingHeroProps = {
   onSearchSubmit?: string;
   apiKey?: string;
+  highestRated: SimplePCGame[];
+  newReleases: SimplePCGame[];
 };
 
 function SampleSearchLink() {
@@ -31,6 +35,8 @@ function SampleSearchLink() {
 export default function LandingHero({
   onSearchSubmit = LANDING_HERO_DEFAULT_SEARCH_PATH,
   apiKey,
+  highestRated,
+  newReleases,
 }: LandingHeroProps) {
   const [isLibraryOpen, setIsLibraryOpen] = useState(false);
 
@@ -53,6 +59,22 @@ export default function LandingHero({
       <main className="mx-auto max-w-5xl px-8 py-16">
         <GameSearchBar action={onSearchSubmit} />
         <SampleSearchLink />
+        <h2 className="mt-12 mb-4 text-2xl font-bold">
+           New Releases
+        </h2>
+
+        <div className="grid grid-cols-5 gap-4">
+          {newReleases.map((game) => (
+            <div key={game.id}>
+              <img
+                src={game.backgroundImage}
+                alt={game.name}
+                className="rounded-lg"
+              />
+              <p className="mt-2 text-sm">{game.name}</p>
+            </div>
+          ))}
+        </div>
       </main>
     </div>
   );

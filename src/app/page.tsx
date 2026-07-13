@@ -1,8 +1,24 @@
-import React from "react";
 import LandingHero from "@/components/LandingHero";
+import {
+  getHighestRatedPCGames,
+  getNewReleasePCGames,
+} from "@/services/gameService";
 
-export default function Home() {
+export default async function Home() {
   const apiKey = process.env.RAWG_API_KEY;
 
-  return <LandingHero apiKey={apiKey} />;
+  const [highestRated, newReleases] = apiKey
+    ? await Promise.all([
+        getHighestRatedPCGames(apiKey, 5),
+        getNewReleasePCGames(apiKey, 5),
+      ])
+    : [[], []];
+
+  return (
+    <LandingHero
+      apiKey={apiKey}
+      highestRated={highestRated}
+      newReleases={newReleases}
+    />
+  );
 }
