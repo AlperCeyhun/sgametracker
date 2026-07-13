@@ -3,11 +3,9 @@
 import Link from "next/link";
 import React, { useState } from "react";
 import LibrarySidebar from "@/components/LibrarySidebar";
+import GameSearchBar from "@/components/GameSearchBar";
 import {
-  LANDING_HERO_BUTTON_LABEL,
   LANDING_HERO_DEFAULT_SEARCH_PATH,
-  LANDING_HERO_PLACEHOLDER,
-  LANDING_HERO_QUERY_PARAM,
   LANDING_HERO_SAMPLE_LINK_LABEL,
   LANDING_HERO_SAMPLE_SEARCH_PATH,
 } from "@/utils/constants";
@@ -16,30 +14,6 @@ type LandingHeroProps = {
   onSearchSubmit?: string;
   apiKey?: string;
 };
-
-type SearchFormProps = {
-  action: string;
-};
-
-function SearchForm({ action }: SearchFormProps) {
-  return (
-    <form action={action} method="get" className="flex w-full gap-3">
-      <input
-        type="text"
-        name={LANDING_HERO_QUERY_PARAM}
-        placeholder={LANDING_HERO_PLACEHOLDER}
-        className="flex-1 rounded-lg border border-gray-600 bg-white px-4 py-3 text-gray-900 placeholder:text-gray-500 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/40"
-      />
-
-      <button
-        type="submit"
-        className="rounded-lg bg-blue-600 px-6 py-3 font-medium text-white transition hover:bg-blue-700 active:scale-95"
-      >
-        {LANDING_HERO_BUTTON_LABEL}
-      </button>
-    </form>
-  );
-}
 
 function SampleSearchLink() {
   return (
@@ -77,7 +51,7 @@ export default function LandingHero({
       />
 
       <main className="mx-auto max-w-5xl px-8 py-16">
-        <SearchForm action={onSearchSubmit} />
+        <GameSearchBar action={onSearchSubmit} />
         <SampleSearchLink />
       </main>
     </div>
