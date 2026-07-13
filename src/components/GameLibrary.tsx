@@ -69,56 +69,64 @@ function GameLibraryCard({
         <img
           src={game.backgroundImage}
           alt={game.name}
-          className="h-20 w-28 rounded-md object-cover"
+          className="h-26 w-32 rounded-md object-cover"
         />
       </div>
 
       <div className="min-w-0 flex-1">
-        <div className="mb-2 flex items-start justify-between gap-2">
+        <div className="mb-2 flex items-start justify-between gap-2 pr-10">
           <h3 className="min-w-0 flex-1 text-sm font-semibold text-white line-clamp-2">
             {game.name}
           </h3>
 
           <span
-            className={`shrink-0 rounded-full px-2 py-0.5 text-[11px] font-bold text-white ${getScoreColor(game.metacritic)}`}
+            className={`shrink-0 rounded-full px-2 py-0.5 text-[11px] font-bold text-white ${getScoreColor(
+              game.metacritic
+            )}`}
           >
             ⭐ {game.metacritic ?? GAME_RESULTS_EMPTY_VALUE}
           </span>
         </div>
 
-        <div className="space-y-0.5 text-xs text-gray-300">
+        <div className="space-y-1 text-xs text-gray-300">
           <p>
-            <span className="font-semibold text-white">{GAME_RESULTS_RELEASED_LABEL}</span>{" "}
+            <span className="font-semibold text-white">
+              {GAME_RESULTS_RELEASED_LABEL}
+            </span>{" "}
             {game.released}
           </p>
 
           <p className="truncate">
-            <span className="font-semibold text-white">{GAME_RESULTS_GENRES_LABEL}</span>{" "}
-            {game.genres.length ? game.genres.join(", ") : GAME_RESULTS_EMPTY_VALUE}
+            <span className="font-semibold text-white">
+              {GAME_RESULTS_GENRES_LABEL}
+            </span>{" "}
+            {game.genres.length
+              ? game.genres.join(", ")
+              : GAME_RESULTS_EMPTY_VALUE}
           </p>
+
+          <button
+            type="button"
+            onClick={() => onStatusToggle(game.id)}
+            title="Change play status"
+            className={`mt-2 inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-[10px] font-medium capitalize transition-colors ${getStatusStyle(
+              status
+            )}`}
+          >
+            <span className="h-1.5 w-1.5 rounded-full bg-current opacity-70" />
+            {status}
+          </button>
         </div>
       </div>
 
-      <div className="absolute right-3 top-3 flex flex-col items-end gap-2">
-        <button
-          type="button"
-          onClick={() => onStatusToggle(game.id)}
-          title="Change play status"
-          className={`inline-flex items-center gap-2 rounded-full border px-3 py-1 text-[11px] font-medium capitalize tracking-wide transition-all duration-200 hover:scale-[1.03] active:scale-100 ${getStatusStyle(status)}`}
-        >
-          <span className="h-2 w-2 rounded-full bg-current opacity-70" />
-          {status}
-        </button>
-
-        <button
-          type="button"
-          onClick={() => onRemove(game.id)}
-          aria-label={`Remove ${game.name}`}
-          className="flex h-8 w-8 items-center justify-center rounded-full bg-red-600/70 text-lg font-bold text-white shadow-[0_0_18px_rgba(220,38,38,0.45)] transition duration-200 hover:bg-red-700"
-        >
-          ✕
-        </button>
-      </div>
+      <button
+        type="button"
+        onClick={() => onRemove(game.id)}
+        aria-label={`Remove ${game.name}`}
+        className="absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-full bg-red-600/70 text-lg font-bold text-white shadow-[0_0_18px_rgba(220,38,38,0.45)] transition duration-200 hover:bg-red-700"
+      >
+        ✕
+      </button>
     </div>
   );
 }
