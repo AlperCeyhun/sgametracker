@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { SimplePCGame } from "@/types/game.types";
+import { SavedGame, SavedGameStatus, SimplePCGame } from "@/types/game.types";
 import {
   GAME_RESULTS_EMPTY_VALUE,
   GAME_RESULTS_GENRES_LABEL,
@@ -110,40 +110,62 @@ function GameCard({ game, isSaved, onToggleSave }: GameCardProps) {
 }
 
 export default function GameResultsList({ games }: GameResultsListProps) {
-  const [savedIds, setSavedIds] = useState<number[]>([]);
+  const [savedGames, setSavedGames] = useState<SavedGame[]>([]);
+
+  const isValidSavedGameStatus = (value: unknown): value is SavedGameStatus =>
+    value === "played" || value === "playing" || value === "will play";
 
   useEffect(() => {
     try {
       const stored = localStorage.getItem(SAVED_GAMES_STORAGE_KEY);
 
       if (stored) {
-        const parsed = JSON.parse(stored) as number[];
+        const parsed = JSON.parse(stored);
 
         if (Array.isArray(parsed)) {
-          setSavedIds(parsed);
+          const normalized = parsed
+            .map((item) => {
+              if (typeof item === "number") {
+                return { id: item, status: "will play" as SavedGameStatus };
+              }
+
+              if (
+                item &&
+                typeof item === "object" &&
+                typeof (item as any).id === "number" &&
+                isValidSavedGameStatus((item as any).status)
+              ) {
+                return { id: (item as any).id, status: (item as any).status };
+              }
+
+              return null;
+            })
+            .filter((entry): entry is SavedGame => entry !== null);
+
+          setSavedGames(normalized);
         }
       }
     } catch {
-      setSavedIds([]);
+      setSavedGames([]);
     }
   }, []);
 
   const toggleSavedGame = (gameId: number) => {
-    setSavedIds((current) => {
-      const nextIds = current.includes(gameId)
-        ? current.filter((id) => id !== gameId)
-        : [...current, gameId];
+    setSavedGames((current) => {
+      const nextGames: SavedGame[] = current.some((item) => item.id === gameId)
+        ? current.filter((saved) => saved.id !== gameId)
+        : [...current, { id: gameId, status: "will play" as SavedGameStatus }];
 
-      localStorage.setItem(SAVED_GAMES_STORAGE_KEY, JSON.stringify(nextIds));
+      localStorage.setItem(SAVED_GAMES_STORAGE_KEY, JSON.stringify(nextGames));
 
-      return nextIds;
+      return nextGames;
     });
   };
 
   return (
     <div className="grid gap-4">
       {games.map((game) => {
-        const isSaved = savedIds.includes(game.id);
+        const isSaved = savedGames.some((saved) => saved.id === game.id);
 
         return (
           <GameCard

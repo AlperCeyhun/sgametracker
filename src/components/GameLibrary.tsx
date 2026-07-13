@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { getGameDetails } from "@/services/gameDetailService";
-import { SimplePCGame } from "@/types/game.types";
+import { SavedGame, SavedGameStatus, SimplePCGame } from "@/types/game.types";
 import {
   GAME_RESULTS_EMPTY_VALUE,
   GAME_RESULTS_GENRES_LABEL,
@@ -13,6 +13,8 @@ import {
 type GameLibraryProps = {
   apiKey?: string;
 };
+
+const SAVED_GAME_STATUS_ORDER: SavedGameStatus[] = ["will play", "playing", "played"];
 
 function getScoreColor(metacritic: number | null) {
   if (metacritic == null) {
@@ -30,12 +32,36 @@ function getScoreColor(metacritic: number | null) {
   return "bg-red-600";
 }
 
+function getNextStatus(current: SavedGameStatus) {
+  const currentIndex = SAVED_GAME_STATUS_ORDER.indexOf(current);
+  const nextIndex = (currentIndex + 1) % SAVED_GAME_STATUS_ORDER.length;
+
+  return SAVED_GAME_STATUS_ORDER[nextIndex];
+}
+
+function getStatusStyle(status: SavedGameStatus) {
+  switch (status) {
+    case "will play":
+      return "border border-violet-300 bg-violet-200/90 text-violet-900 hover:bg-violet-300/90";
+
+    case "playing":
+      return "border border-amber-300 bg-amber-200/90 text-amber-900 hover:bg-amber-300/90";
+
+    case "played":
+      return "border border-emerald-300 bg-emerald-200/90 text-emerald-900 hover:bg-emerald-300/90";
+  }
+}
+
 function GameLibraryCard({
   game,
+  status,
   onRemove,
+  onStatusToggle,
 }: {
   game: SimplePCGame;
+  status: SavedGameStatus;
   onRemove: (gameId: number) => void;
+  onStatusToggle: (gameId: number) => void;
 }) {
   return (
     <div className="group relative flex gap-3 rounded-lg border border-gray-800 bg-gray-900/80 p-3 transition duration-200 hover:bg-gray-800/90">
@@ -73,67 +99,101 @@ function GameLibraryCard({
         </div>
       </div>
 
-      <button
-        type="button"
-        onClick={() => onRemove(game.id)}
-        aria-label={`Remove ${game.name}`}
-        className="absolute top-2 right-2 flex h-8 w-8 items-center justify-center rounded-full bg-red-600/70 text-lg font-bold text-white opacity-0 shadow-[0_0_18px_rgba(220,38,38,0.45)] transition-all duration-200 group-hover:opacity-100"
-      >
-        ✕
-      </button>
+      <div className="absolute right-3 top-3 flex flex-col items-end gap-2">
+        <button
+          type="button"
+          onClick={() => onStatusToggle(game.id)}
+          title="Change play status"
+          className={`inline-flex items-center gap-2 rounded-full border px-3 py-1 text-[11px] font-medium capitalize tracking-wide transition-all duration-200 hover:scale-[1.03] active:scale-100 ${getStatusStyle(status)}`}
+        >
+          <span className="h-2 w-2 rounded-full bg-current opacity-70" />
+          {status}
+        </button>
+
+        <button
+          type="button"
+          onClick={() => onRemove(game.id)}
+          aria-label={`Remove ${game.name}`}
+          className="flex h-8 w-8 items-center justify-center rounded-full bg-red-600/70 text-lg font-bold text-white shadow-[0_0_18px_rgba(220,38,38,0.45)] transition duration-200 hover:bg-red-700"
+        >
+          ✕
+        </button>
+      </div>
     </div>
   );
 }
 
 export default function GameLibrary({ apiKey }: GameLibraryProps) {
-  const [savedIds, setSavedIds] = useState<number[]>([]);
+  const [savedGames, setSavedGames] = useState<SavedGame[]>([]);
   const [games, setGames] = useState<SimplePCGame[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
+  const parseSavedGames = (stored: string | null) => {
+    if (!stored) {
+      return [];
+    }
+
     try {
-      const stored = localStorage.getItem(SAVED_GAMES_STORAGE_KEY);
+      const parsed = JSON.parse(stored);
 
-      if (stored) {
-        const parsed = JSON.parse(stored);
-
-        if (Array.isArray(parsed)) {
-          const normalizedIds = parsed
-            .map((id) => Number(id))
-            .filter((id): id is number => Number.isFinite(id));
-
-          setSavedIds(normalizedIds);
-          return;
-        }
+      if (!Array.isArray(parsed)) {
+        return [];
       }
 
-      setSavedIds([]);
+      return parsed
+        .map((item) => {
+          if (typeof item === "number") {
+            return { id: item, status: "will play" as SavedGameStatus };
+          }
+
+          if (
+            item &&
+            typeof item === "object" &&
+            typeof (item as any).id === "number"
+          ) {
+            const status = (item as any).status;
+
+            if (status === "played" || status === "playing" || status === "will play") {
+              return { id: (item as any).id, status };
+            }
+          }
+
+          return null;
+        })
+        .filter((item): item is SavedGame => item !== null);
     } catch {
-      setSavedIds([]);
+      return [];
     }
-  }, []);
-
-  const removeSavedGame = (gameId: number) => {
-    const nextIds = savedIds.filter((id) => id !== gameId);
-
-    setSavedIds(nextIds);
-    localStorage.setItem(SAVED_GAMES_STORAGE_KEY, JSON.stringify(nextIds));
-    setGames((current) => current.filter((game) => game.id !== gameId));
   };
 
   useEffect(() => {
-    if (!savedIds.length) {
+    const stored = localStorage.getItem(SAVED_GAMES_STORAGE_KEY);
+    const normalized = parseSavedGames(stored);
+    setSavedGames(normalized);
+  }, []);
+
+  const removeSavedGame = (gameId: number) => {
+    const nextSavedGames = savedGames.filter((saved) => saved.id !== gameId);
+    setSavedGames(nextSavedGames);
+    localStorage.setItem(SAVED_GAMES_STORAGE_KEY, JSON.stringify(nextSavedGames));
+    setGames((current) => current.filter((game) => game.id !== gameId));
+  };
+
+  const toggleSavedGameStatus = (gameId: number) => {
+    const nextSavedGames = savedGames.map((saved) =>
+      saved.id === gameId ? { ...saved, status: getNextStatus(saved.status) } : saved
+    );
+
+    setSavedGames(nextSavedGames);
+    localStorage.setItem(SAVED_GAMES_STORAGE_KEY, JSON.stringify(nextSavedGames));
+  };
+
+  useEffect(() => {
+    if (!savedGames.length) {
       setGames([]);
       setIsLoading(false);
       setError(null);
-      return;
-    }
-
-    if (!apiKey) {
-      setGames([]);
-      setIsLoading(false);
-      setError("Set RAWG_API_KEY to load your saved games.");
       return;
     }
 
@@ -152,9 +212,9 @@ export default function GameLibrary({ apiKey }: GameLibraryProps) {
 
       try {
         const details = await Promise.all(
-          savedIds.map(async (id) => {
+          savedGames.map(async (saved) => {
             try {
-              return await getGameDetails(apiKey ?? "", id);
+              return await getGameDetails(apiKey ?? "", saved.id);
             } catch {
               return null;
             }
@@ -171,7 +231,7 @@ export default function GameLibrary({ apiKey }: GameLibraryProps) {
 
         setGames(loadedGames);
 
-        if (!loadedGames.length && savedIds.length > 0) {
+        if (!loadedGames.length && savedGames.length > 0) {
           setError("Unable to load your saved games right now.");
         } else {
           setError(null);
@@ -192,7 +252,7 @@ export default function GameLibrary({ apiKey }: GameLibraryProps) {
     return () => {
       isActive = false;
     };
-  }, [apiKey, savedIds]);
+  }, [apiKey, savedGames]);
 
   if (isLoading) {
     return <div className="text-gray-300">Loading your game library...</div>;
@@ -208,9 +268,19 @@ export default function GameLibrary({ apiKey }: GameLibraryProps) {
 
   return (
     <div className="grid gap-3">
-      {games.map((game) => (
-        <GameLibraryCard key={game.id} game={game} onRemove={removeSavedGame} />
-      ))}
+      {games.map((game) => {
+        const saved = savedGames.find((item) => item.id === game.id);
+
+        return (
+          <GameLibraryCard
+            key={game.id}
+            game={game}
+            status={saved?.status ?? "will play"}
+            onRemove={removeSavedGame}
+            onStatusToggle={toggleSavedGameStatus}
+          />
+        );
+      })}
     </div>
   );
 }
