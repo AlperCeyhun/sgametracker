@@ -76,7 +76,9 @@ function getSavedGamesFromStore(): SavedGame[] {
 
 function subscribe(callback: () => void) {
   subscribers.add(callback);
-  return () => subscribers.delete(callback);
+  return () => {
+    subscribers.delete(callback);
+  };
 }
 
 function getNextStatus(current: SavedGameStatus): SavedGameStatus {
@@ -88,9 +90,9 @@ function getNextStatus(current: SavedGameStatus): SavedGameStatus {
 
 function toggleSavedGame(gameId: number): SavedGame[] {
   const current = getSavedGamesFromStore();
-  const next = current.some((item) => item.id === gameId)
+  const next: SavedGame[] = current.some((item) => item.id === gameId)
     ? current.filter((item) => item.id !== gameId)
-    : [...current, { id: gameId, status: "will play" }];
+    : [...current, { id: gameId, status: "will play" as SavedGameStatus }];
 
   saveSavedGames(next);
   return next;
@@ -121,9 +123,11 @@ export function useSavedGames() {
       setSavedGames(loadSavedGames());
     }
 
-    return subscribe(() => {
+    const unsubscribe = subscribe(() => {
       setSavedGames(getSavedGamesFromStore());
     });
+
+    return () => unsubscribe();
   }, []);
 
   return {
