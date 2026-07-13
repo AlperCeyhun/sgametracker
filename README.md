@@ -17,37 +17,11 @@ A modern Next.js app for discovering PC games from RAWG, saving favorites locall
 - TypeScript
 - Tailwind CSS
 
-## Getting Started
-
-1. Install dependencies:
-   ```bash
-   npm install
-   ```
-
-2. Create a `.env.local` file in the project root:
-   ```bash
-   RAWG_API_KEY=your_api_key_here
-   ```
-
-3. Run the development server:
-   ```bash
-   npm run dev
-   ```
-
-4. Open `http://localhost:3000` in your browser.
-
 ## Live Demo
 
 You can also view the deployed app here:
 
 - https://sgametracker.vercel.app
-
-## Available Scripts
-
-- `npm run dev` - start the development server
-- `npm run build` - create a production build
-- `npm run start` - run the production build
-- `npm run lint` - run ESLint
 
 ## Project Notes
 
