@@ -6,6 +6,7 @@ import GameResultsList from "@/components/GameResultsList";
 import GameSearchBar from "@/components/GameSearchBar";
 import PaginationControls from "@/components/PaginationControls";
 import LibrarySidebar from "@/components/LibrarySidebar";
+import BackButton from "@/components/BackButton";
 
 type GameSearchPageProps = {
   apiKey?: string;
@@ -35,6 +36,8 @@ export default function GameSearchPage({
       >
         {isLibraryOpen ? "Close Library" : "Open Library"}
       </button>
+
+      <BackButton text="Home"className="fixed top-4 left-36 z-30"/>
 
       <LibrarySidebar
         isOpen={isLibraryOpen}
