@@ -1,13 +1,13 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import { SavedGame, SavedGameStatus, SimplePCGame } from "@/types/game.types";
+import React from "react";
+import { SimplePCGame } from "@/types/game.types";
 import {
   GAME_RESULTS_EMPTY_VALUE,
   GAME_RESULTS_GENRES_LABEL,
   GAME_RESULTS_RELEASED_LABEL,
-  SAVED_GAMES_STORAGE_KEY,
 } from "@/utils/constants";
+import { useSavedGames } from "@/hooks/useSavedGames";
 
 type GameResultsListProps = {
   games: SimplePCGame[];
@@ -50,14 +50,18 @@ function GameCover({ game, isSaved, onToggleSave }: GameCardProps) {
           event.stopPropagation();
           onToggleSave(game.id);
         }}
-        aria-label={isSaved ? `Remove ${game.name}` : `Save ${game.name}`}
-        className={`absolute top-2.5 right-2.5 flex h-10 w-10 items-center justify-center rounded-full text-lg font-bold text-white backdrop-blur-md transition-all duration-200 ${
+        aria-label={
           isSaved
-            ? "bg-red-600/70 shadow-[0_0_18px_rgba(220,38,38,0.45)]"
-            : "bg-green-600/70 shadow-[0_0_18px_rgba(34,197,94,0.45)]"
+            ? `Remove ${game.name} from library`
+            : `Add ${game.name} to library`
+        }
+        className={`absolute top-2.5 right-2.5 flex items-center justify-center rounded-full px-3 py-2 text-sm font-semibold text-white backdrop-blur-md transition-all duration-200 ${
+          isSaved
+            ? "bg-red-600/80 shadow-[0_0_18px_rgba(220,38,38,0.45)]"
+            : "bg-green-600/80 shadow-[0_0_18px_rgba(34,197,94,0.45)]"
         } opacity-0 -translate-y-1 group-hover:translate-y-0 group-hover:opacity-100`}
       >
-        {isSaved ? "✕" : "✓"}
+        {isSaved ? "Remove" : "Add"}
       </button>
     </div>
   );
@@ -110,72 +114,18 @@ function GameCard({ game, isSaved, onToggleSave }: GameCardProps) {
 }
 
 export default function GameResultsList({ games }: GameResultsListProps) {
-  const [savedGames, setSavedGames] = useState<SavedGame[]>([]);
-
-  const isValidSavedGameStatus = (value: unknown): value is SavedGameStatus =>
-    value === "played" || value === "playing" || value === "will play";
-
-  useEffect(() => {
-    try {
-      const stored = localStorage.getItem(SAVED_GAMES_STORAGE_KEY);
-
-      if (stored) {
-        const parsed = JSON.parse(stored);
-
-        if (Array.isArray(parsed)) {
-          const normalized = parsed
-            .map((item) => {
-              if (typeof item === "number") {
-                return { id: item, status: "will play" as SavedGameStatus };
-              }
-
-              if (
-                item &&
-                typeof item === "object" &&
-                typeof (item as any).id === "number" &&
-                isValidSavedGameStatus((item as any).status)
-              ) {
-                return { id: (item as any).id, status: (item as any).status };
-              }
-
-              return null;
-            })
-            .filter((entry): entry is SavedGame => entry !== null);
-
-          setSavedGames(normalized);
-        }
-      }
-    } catch {
-      setSavedGames([]);
-    }
-  }, []);
-
-  const toggleSavedGame = (gameId: number) => {
-    setSavedGames((current) => {
-      const nextGames: SavedGame[] = current.some((item) => item.id === gameId)
-        ? current.filter((saved) => saved.id !== gameId)
-        : [...current, { id: gameId, status: "will play" as SavedGameStatus }];
-
-      localStorage.setItem(SAVED_GAMES_STORAGE_KEY, JSON.stringify(nextGames));
-
-      return nextGames;
-    });
-  };
+  const { toggleSavedGame, isSaved } = useSavedGames();
 
   return (
     <div className="grid gap-4">
-      {games.map((game) => {
-        const isSaved = savedGames.some((saved) => saved.id === game.id);
-
-        return (
-          <GameCard
-            key={game.id}
-            game={game}
-            isSaved={isSaved}
-            onToggleSave={toggleSavedGame}
-          />
-        );
-      })}
+      {games.map((game) => (
+        <GameCard
+          key={game.id}
+          game={game}
+          isSaved={isSaved(game.id)}
+          onToggleSave={toggleSavedGame}
+        />
+      ))}
     </div>
   );
 }

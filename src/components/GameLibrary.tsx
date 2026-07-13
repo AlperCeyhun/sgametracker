@@ -3,11 +3,11 @@
 import React, { useEffect, useState } from "react";
 import { getGameDetails } from "@/services/gameDetailService";
 import { SavedGame, SavedGameStatus, SimplePCGame } from "@/types/game.types";
+import { useSavedGames } from "@/hooks/useSavedGames";
 import {
   GAME_RESULTS_EMPTY_VALUE,
   GAME_RESULTS_GENRES_LABEL,
   GAME_RESULTS_RELEASED_LABEL,
-  SAVED_GAMES_STORAGE_KEY,
 } from "@/utils/constants";
 
 type GameLibraryProps = {
@@ -132,70 +132,10 @@ function GameLibraryCard({
 }
 
 export default function GameLibrary({ apiKey }: GameLibraryProps) {
-  const [savedGames, setSavedGames] = useState<SavedGame[]>([]);
+  const { savedGames, removeSavedGame, toggleSavedGameStatus } = useSavedGames();
   const [games, setGames] = useState<SimplePCGame[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
-  const parseSavedGames = (stored: string | null) => {
-    if (!stored) {
-      return [];
-    }
-
-    try {
-      const parsed = JSON.parse(stored);
-
-      if (!Array.isArray(parsed)) {
-        return [];
-      }
-
-      return parsed
-        .map((item) => {
-          if (typeof item === "number") {
-            return { id: item, status: "will play" as SavedGameStatus };
-          }
-
-          if (
-            item &&
-            typeof item === "object" &&
-            typeof (item as any).id === "number"
-          ) {
-            const status = (item as any).status;
-
-            if (status === "played" || status === "playing" || status === "will play") {
-              return { id: (item as any).id, status };
-            }
-          }
-
-          return null;
-        })
-        .filter((item): item is SavedGame => item !== null);
-    } catch {
-      return [];
-    }
-  };
-
-  useEffect(() => {
-    const stored = localStorage.getItem(SAVED_GAMES_STORAGE_KEY);
-    const normalized = parseSavedGames(stored);
-    setSavedGames(normalized);
-  }, []);
-
-  const removeSavedGame = (gameId: number) => {
-    const nextSavedGames = savedGames.filter((saved) => saved.id !== gameId);
-    setSavedGames(nextSavedGames);
-    localStorage.setItem(SAVED_GAMES_STORAGE_KEY, JSON.stringify(nextSavedGames));
-    setGames((current) => current.filter((game) => game.id !== gameId));
-  };
-
-  const toggleSavedGameStatus = (gameId: number) => {
-    const nextSavedGames = savedGames.map((saved) =>
-      saved.id === gameId ? { ...saved, status: getNextStatus(saved.status) } : saved
-    );
-
-    setSavedGames(nextSavedGames);
-    localStorage.setItem(SAVED_GAMES_STORAGE_KEY, JSON.stringify(nextSavedGames));
-  };
 
   useEffect(() => {
     if (!savedGames.length) {

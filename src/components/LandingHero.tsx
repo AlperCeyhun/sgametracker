@@ -9,7 +9,8 @@ import {
   LANDING_HERO_SAMPLE_LINK_LABEL,
   LANDING_HERO_SAMPLE_SEARCH_PATH,
 } from "@/utils/constants";
-import { SimplePCGame } from "@/types/game.types";
+import { SavedGameStatus, SimplePCGame } from "@/types/game.types";
+import { useSavedGames } from "@/hooks/useSavedGames";
 
 
 type LandingHeroProps = {
@@ -18,6 +19,7 @@ type LandingHeroProps = {
   highestRated: SimplePCGame[];
   newReleases: SimplePCGame[];
 };
+
 
 function SampleSearchLink() {
   return (
@@ -39,6 +41,7 @@ export default function LandingHero({
   newReleases,
 }: LandingHeroProps) {
   const [isLibraryOpen, setIsLibraryOpen] = useState(false);
+  const { savedGames, toggleSavedGame, isSaved } = useSavedGames();
 
   return (
     <div className="relative min-h-screen bg-gray-950 text-white">
@@ -64,16 +67,38 @@ export default function LandingHero({
         </h2>
 
         <div className="grid grid-cols-5 gap-4">
-          {newReleases.map((game) => (
-            <div key={game.id}>
-              <img
-                src={game.backgroundImage}
-                alt={game.name}
-                className="rounded-lg"
-              />
-              <p className="mt-2 text-sm">{game.name}</p>
-            </div>
-          ))}
+          {newReleases.map((game) => {
+            return (
+              <div key={game.id}>
+                <div className="group relative overflow-hidden rounded-lg">
+                  <img
+                    src={game.backgroundImage}
+                    alt={game.name}
+                    className="h-48 w-full object-cover transition duration-200 group-hover:scale-105"
+                  />
+
+                  <button
+                    type="button"
+                    onClick={() => toggleSavedGame(game.id)}
+                    aria-label={
+                      isSaved(game.id)
+                        ? `Remove ${game.name} from library`
+                        : `Add ${game.name} to library`
+                    }
+                    className={`absolute inset-x-3 bottom-3 flex items-center justify-center rounded-full px-4 py-2 text-sm font-semibold text-white transition duration-200 ${
+                      isSaved(game.id)
+                        ? "bg-red-600/85"
+                        : "bg-green-600/85"
+                    } opacity-0 group-hover:opacity-100`}
+                  >
+                    {isSaved(game.id) ? "Remove from library" : "Add to library"}
+                  </button>
+                </div>
+
+                <p className="mt-2 text-sm">{game.name}</p>
+              </div>
+            );
+          })}
         </div>
       </main>
     </div>
