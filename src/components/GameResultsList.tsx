@@ -21,48 +21,28 @@ type GameCardProps = {
 
 function getScoreColor(metacritic: number | null) {
   if (metacritic == null) {
-    return "bg-gray-500";
+    return "bg-gray-600";
   }
 
   if (metacritic >= 80) {
-    return "bg-green-600";
+    return "bg-green-700";
   }
 
   if (metacritic >= 60) {
-    return "bg-yellow-600";
+    return "bg-yellow-700";
   }
 
-  return "bg-red-600";
+  return "bg-red-700";
 }
 
-function GameCover({ game, isSaved, onToggleSave }: GameCardProps) {
+function GameCover({ game }: { game: SimplePCGame }) {
   return (
-    <div className="group relative shrink-0">
+    <div className="shrink-0">
       <img
         src={game.backgroundImage}
         alt={game.name}
         className="h-30 w-55 rounded-lg object-cover"
       />
-
-      <button
-        type="button"
-        onClick={(event) => {
-          event.stopPropagation();
-          onToggleSave(game.id);
-        }}
-        aria-label={
-          isSaved
-            ? `Remove ${game.name} from library`
-            : `Add ${game.name} to library`
-        }
-        className={`absolute top-2.5 right-2.5 flex items-center justify-center rounded-full px-3 py-2 text-sm font-semibold text-white backdrop-blur-md transition-all duration-200 ${
-          isSaved
-            ? "bg-red-600/80 shadow-[0_0_18px_rgba(220,38,38,0.45)]"
-            : "bg-green-600/80 shadow-[0_0_18px_rgba(34,197,94,0.45)]"
-        } opacity-0 -translate-y-1 group-hover:translate-y-0 group-hover:opacity-100`}
-      >
-        {isSaved ? "Remove" : "Add"}
-      </button>
     </div>
   );
 }
@@ -96,15 +76,36 @@ function GameMetaInfo({ game }: { game: SimplePCGame }) {
 function GameCard({ game, isSaved, onToggleSave }: GameCardProps) {
   return (
     <div className="flex gap-4 rounded-xl border border-gray-700 bg-gray-900 p-4">
-      <GameCover game={game} isSaved={isSaved} onToggleSave={onToggleSave} />
+      <GameCover game={game} />
 
       <div className="flex-1">
-        <div className="mb-3 flex items-center justify-between">
+        <div className="mb-3 flex items-start justify-between gap-3">
           <h2 className="min-w-0 flex-1 wrap-break-word text-2xl font-bold text-white">
             {game.name}
           </h2>
 
-          <GameScoreBadge metacritic={game.metacritic} />
+          <div className="flex flex-col items-end gap-2">
+            <GameScoreBadge metacritic={game.metacritic} />
+          </div>
+        </div>
+
+        <div className="flex flex-col items-end">
+          <button
+            type="button"
+            onClick={() => onToggleSave(game.id)}
+            aria-label={
+              isSaved
+                ? `Remove ${game.name} from library`
+                : `Add ${game.name} to library`
+            }
+            className={`inline-flex items-center justify-center rounded-full border border-white/20 px-4 py-2.5 text-[15px] font-semibold text-white shadow-lg transition-none ${
+              isSaved
+                ? "bg-red-600/95 shadow-[0_0_18px_rgba(220,38,38,0.45)]"
+                : "bg-green-600/95 shadow-[0_0_18px_rgba(34,197,94,0.45)]"
+            }`}
+          >
+            {isSaved ? "Remove" : "Add"}
+          </button>
         </div>
 
         <GameMetaInfo game={game} />

@@ -70,11 +70,11 @@ export default function LandingHero({
           {newReleases.map((game) => {
             return (
               <div key={game.id}>
-                <div className="group relative overflow-hidden rounded-lg">
+                <div className="group relative overflow-visible rounded-lg">
                   <img
                     src={game.backgroundImage}
                     alt={game.name}
-                    className="h-48 w-full object-cover transition duration-200 group-hover:scale-105"
+                    className="h-48 w-full rounded-lg object-cover transition duration-200 group-hover:scale-105"
                   />
 
                   <button
@@ -85,11 +85,11 @@ export default function LandingHero({
                         ? `Remove ${game.name} from library`
                         : `Add ${game.name} to library`
                     }
-                    className={`absolute inset-x-3 bottom-3 flex items-center justify-center rounded-full px-4 py-2 text-sm font-semibold text-white transition duration-200 ${
+                    className={`absolute inset-x-3 bottom-3 flex items-center justify-center rounded-full border border-white/20 px-4 py-2 text-sm font-semibold text-white shadow-lg backdrop-blur-md transition-all duration-200 ${
                       isSaved(game.id)
-                        ? "bg-red-600/85"
-                        : "bg-green-600/85"
-                    } opacity-0 group-hover:opacity-100`}
+                        ? "bg-red-600/90 hover:bg-red-700"
+                        : "bg-green-600/90 hover:bg-green-700"
+                    } opacity-0 translate-y-2 group-hover:translate-y-0 group-hover:opacity-100 focus-visible:translate-y-0 focus-visible:opacity-100 hover:scale-105`}
                   >
                     {isSaved(game.id) ? "Remove from library" : "Add to library"}
                   </button>
